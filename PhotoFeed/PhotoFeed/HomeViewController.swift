@@ -50,10 +50,20 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     @IBAction func filterButtonPressed(_ sender: Any) {
         let alertController = UIAlertController(title: "Filters", message: "Please Select a filter:", preferredStyle: .alert)
+        
         let chromeAction = UIAlertAction(title: "Chrome", style: .default) { (action) in
-            Filters.filter(image: self.selectedImageView.image!, withFilter: .CIPhotoEffectChrome, completion: { (filteredImage) in
-                self.selectedImageView.image = filteredImage
+            if let imageViewImage = self.selectedImageView.image {
+                Filters.filter(image: imageViewImage, withFilter: .CIPhotoEffectChrome, completion:{ (filteredImage) in
+                    self.selectedImageView.image = filteredImage
                 })
+            }
+        }
+        let vintageAction = UIAlertAction(title: "Vintage", style: .default) { (action) in
+            if let imageViewImage = self.selectedImageView.image {
+                Filters.filter(image: imageViewImage, withFilter: .CIPhotoEffectTransfer, completion:{ (filteredImage) in
+                    self.selectedImageView.image = filteredImage
+                })
+            }
         }
         let blackAndWhiteAction = UIAlertAction(title: "Black and White", style: .default) { (action) in
             if let imageViewImage = self.selectedImageView.image {
@@ -62,18 +72,32 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
                 })
             }
         }
+        let colorCurveAction = UIAlertAction(title: "Color Curve", style: .default) { (action) in
+            if let imageViewImage = self.selectedImageView.image {
+                Filters.filter(image: imageViewImage, withFilter: .CIColorPolynomial, completion:{ (filteredImage) in
+                    self.selectedImageView.image = filteredImage
+                })
+            }
+        }
         alertController.addAction(blackAndWhiteAction)
         alertController.addAction(chromeAction)
+        alertController.addAction(vintageAction)
+        alertController.addAction(colorCurveAction)
         
         self.present(alertController, animated: true, completion: nil)
     }
     
     func presentAlertController() {
+        
         let alertController = UIAlertController(title: "Select Source", message: "Please select the source for your image!", preferredStyle: .actionSheet)
         let photoLibraryAction = UIAlertAction(title: "Photo Library", style: .default) { (action) in
             self.presentImagePicker(sourceType: .photoLibrary)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.popoverPresentationController?.sourceView = self.view
+        alertController.popoverPresentationController?.sourceRect = CGRect(x:
+            self.view.bounds.size.width / 2.0, y: self.view.bounds.size.height / 2.0, width: 1, height: 1)
         
         alertController.addAction(cancelAction)
         alertController.addAction(photoLibraryAction)
@@ -93,6 +117,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let image = info["UIImagePickerControllerOriginalImage"] as? UIImage {
             self.selectedImageView.image = image
+            self.selectedImageView.backgroundColor = UIColor.white
             print(image)
         }
         self.dismiss(animated: true, completion: nil)

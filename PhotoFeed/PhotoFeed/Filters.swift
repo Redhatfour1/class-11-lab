@@ -14,6 +14,8 @@ enum FilterNames: String{
     case CIPhotoEffectTransfer
     case CIPhotoEffectMono
     case CIPhotoEffectChrome
+    case CIColorPolynomial
+    case CILinearToSRGBToneCurve
 }
 
 
