@@ -129,7 +129,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             
         UIView.animate(withDuration: 0.5) {
             self.view.layoutIfNeeded()
-//            self.selectedImageView.layer.cornerRadius = 100
+            self.selectedImageView.layer.cornerRadius = 100
         }
     }
 }
