@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, GalleryViewControllerDelegate {
     
     let imagePicker = UIImagePickerController()
 
@@ -16,9 +16,21 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     @IBOutlet weak var leadingConstraintForFilterButton: NSLayoutConstraint!
     @IBOutlet weak var trailingConstraintForPostButton: NSLayoutConstraint!
+    @IBOutlet weak var bottomConstraintForUndoButton: NSLayoutConstraint!
+    
+    let kAnimationTime = 0.5
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let tabBarController = self.tabBarController, let viewControllers = tabBarController.viewControllers {
+            
+            for viewController in viewControllers {
+                if let galleryController = viewController as? GalleryViewController {
+                    galleryController.delegate = self
+                }
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -48,8 +60,32 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         }
     }
     
+    @IBAction func undoButtonPressed(_ sender: Any) {
+        if Filters.undoImageFilters.count > 0 {
+            if self.selectedImageView.image == Filters.undoImageFilters.last
+            {
+        Filters.undoImageFilters.removeLast()
+            }
+            self.selectedImageView.image = Filters.undoImageFilters.last
+        } else {
+            self.selectedImageView.image = Filters.originalImage
+        
+        }
+    }
+    
     @IBAction func filterButtonPressed(_ sender: Any) {
         let alertController = UIAlertController(title: "Filters", message: "Please Select a filter:", preferredStyle: .alert)
+        
+//DRY CODE BELOW BUT UNORDERED
+//        let allFilters = ["Chrome" : FilterNames.CIPhotoEffectChrome,
+//                          "Black and White" : FilterNames.CIPhotoEffectMono,
+//                          "Vintage" : FilterNames.CIPhotoEffectTransfer,
+//                          "Tone Curve" : FilterNames.CILinearToSRGBToneCurve]
+//        
+//        for (key, value) in allFilters {
+//            let alertAction = alertActionForFilter(name: value, title: key)
+//            alertController.addAction(alertAction)
+//        }
         
         let chromeAction = UIAlertAction(title: "Chrome", style: .default) { (action) in
             if let imageViewImage = self.selectedImageView.image {
@@ -72,16 +108,33 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
                 })
             }
         }
-        let colorCurveAction = UIAlertAction(title: "Color Curve", style: .default) { (action) in
+        let toneCurveAction = UIAlertAction(title: "Tone Curve", style: .default) { (action) in
             if let imageViewImage = self.selectedImageView.image {
-                Filters.filter(image: imageViewImage, withFilter: .CIColorPolynomial, completion:{ (filteredImage) in
+                Filters.filter(image: imageViewImage, withFilter: .CILinearToSRGBToneCurve, completion:{ (filteredImage) in
                     self.selectedImageView.image = filteredImage
                 })
             }
         }
+        let colorCurveAction = UIAlertAction(title: "Color Curve", style: .default) { (action) in
+            if let imageViewImage = self.selectedImageView.image {
+                Filters.filter(image: imageViewImage, withFilter: .CISRGBToneCurveToLinear, completion:{ (filteredImage) in
+                    self.selectedImageView.image = filteredImage
+                })
+            }
+        }
+        let invertAction = UIAlertAction(title: "Invert", style: .default) { (action) in
+            if let imageViewImage = self.selectedImageView.image {
+                Filters.filter(image: imageViewImage, withFilter: .CIColorInvert, completion:{ (filteredImage) in
+                    self.selectedImageView.image = filteredImage
+                })
+            }
+        }
+        
         alertController.addAction(blackAndWhiteAction)
         alertController.addAction(chromeAction)
         alertController.addAction(vintageAction)
+        alertController.addAction(toneCurveAction)
+        alertController.addAction(invertAction)
         alertController.addAction(colorCurveAction)
         
         self.present(alertController, animated: true, completion: nil)
@@ -96,8 +149,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         alertController.popoverPresentationController?.sourceView = self.view
-        alertController.popoverPresentationController?.sourceRect = CGRect(x:
-            self.view.bounds.size.width / 2.0, y: self.view.bounds.size.height / 2.0, width: 1, height: 1)
+        alertController.popoverPresentationController?.sourceRect = CGRect(x: 0, y: 0, width: self.selectedImageView.frame.size.width, height: self.selectedImageView.frame.size.height)
         
         alertController.addAction(cancelAction)
         alertController.addAction(photoLibraryAction)
@@ -118,16 +170,24 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         if let image = info["UIImagePickerControllerOriginalImage"] as? UIImage {
             self.selectedImageView.image = image
             self.selectedImageView.backgroundColor = UIColor.white
+            Filters.originalImage = image
+            Filters.undoImageFilters.append(image)
             print(image)
         }
         self.dismiss(animated: true, completion: nil)
     }
     
+    func galleryController(didSelect image: UIImage) {
+        self.selectedImageView.image = image
+        self.tabBarController?.selectedIndex = 0
+    }
+    
     func animateInButtons(){
         self.leadingConstraintForFilterButton.constant = 0
         self.trailingConstraintForPostButton.constant = 0
+        self.bottomConstraintForUndoButton.constant = 0
             
-        UIView.animate(withDuration: 0.5) {
+        UIView.animate(withDuration: kAnimationTime) {
             self.view.layoutIfNeeded()
             self.selectedImageView.layer.cornerRadius = 100
         }
