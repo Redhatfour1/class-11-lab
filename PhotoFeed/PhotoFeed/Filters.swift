@@ -14,14 +14,18 @@ enum FilterNames: String{
     case CIPhotoEffectTransfer
     case CIPhotoEffectMono
     case CIPhotoEffectChrome
-    case CIColorPolynomial
+    case CIColorInvert
+    case CISRGBToneCurveToLinear
     case CILinearToSRGBToneCurve
+    
 }
 
 
 class Filters {
 
     static var originalImage = UIImage()
+    
+    static var undoImageFilters = [UIImage]()
         
     class func filter(image: UIImage, withFilter filterName: FilterNames, completion: @escaping FilterCompletion){
         OperationQueue().addOperation {

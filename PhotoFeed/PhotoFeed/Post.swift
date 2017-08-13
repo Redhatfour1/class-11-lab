@@ -30,8 +30,9 @@ class Post {
             
             try data.write(to: image.path())
             
+            let asset = CKAsset(fileURL: image.path())
             let postRecord = CKRecord(recordType: "Post")
-            postRecord.setObject(CKAsset(fileURL: image.path()), forKey: "image")
+            postRecord.setObject(asset, forKey: "image")
             
             return postRecord
             
