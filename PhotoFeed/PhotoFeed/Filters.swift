@@ -17,6 +17,10 @@ enum FilterNames: String{
     case CIColorInvert
     case CISRGBToneCurveToLinear
     case CILinearToSRGBToneCurve
+    case CIMedianFilter
+    case CIMaskToAlpha
+    case CIVignette
+    case CIBumpDistortion
     
 }
 
