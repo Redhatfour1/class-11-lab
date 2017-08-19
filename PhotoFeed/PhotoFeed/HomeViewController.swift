@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Social
 
 class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, GalleryViewControllerDelegate {
     
@@ -76,68 +77,46 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     @IBAction func filterButtonPressed(_ sender: Any) {
         let alertController = UIAlertController(title: "Filters", message: "Please Select a filter:", preferredStyle: .alert)
         
-//DRY CODE BELOW BUT UNORDERED
-//        let allFilters = ["Chrome" : FilterNames.CIPhotoEffectChrome,
-//                          "Black and White" : FilterNames.CIPhotoEffectMono,
-//                          "Vintage" : FilterNames.CIPhotoEffectTransfer,
-//                          "Tone Curve" : FilterNames.CILinearToSRGBToneCurve]
-//        
-//        for (key, value) in allFilters {
-//            let alertAction = alertActionForFilter(name: value, title: key)
-//            alertController.addAction(alertAction)
-//        }
-        
-        let chromeAction = UIAlertAction(title: "Chrome", style: .default) { (action) in
-            if let imageViewImage = self.selectedImageView.image {
-                Filters.filter(image: imageViewImage, withFilter: .CIPhotoEffectChrome, completion:{ (filteredImage) in
-                    self.selectedImageView.image = filteredImage
-                })
-            }
-        }
-        let vintageAction = UIAlertAction(title: "Vintage", style: .default) { (action) in
-            if let imageViewImage = self.selectedImageView.image {
-                Filters.filter(image: imageViewImage, withFilter: .CIPhotoEffectTransfer, completion:{ (filteredImage) in
-                    self.selectedImageView.image = filteredImage
-                })
-            }
-        }
-        let blackAndWhiteAction = UIAlertAction(title: "Black and White", style: .default) { (action) in
-            if let imageViewImage = self.selectedImageView.image {
-                Filters.filter(image: imageViewImage, withFilter: .CIPhotoEffectMono, completion:{ (filteredImage) in
-                    self.selectedImageView.image = filteredImage
-                })
-            }
-        }
-        let toneCurveAction = UIAlertAction(title: "Tone Curve", style: .default) { (action) in
-            if let imageViewImage = self.selectedImageView.image {
-                Filters.filter(image: imageViewImage, withFilter: .CILinearToSRGBToneCurve, completion:{ (filteredImage) in
-                    self.selectedImageView.image = filteredImage
-                })
-            }
-        }
-        let colorCurveAction = UIAlertAction(title: "Color Curve", style: .default) { (action) in
-            if let imageViewImage = self.selectedImageView.image {
-                Filters.filter(image: imageViewImage, withFilter: .CISRGBToneCurveToLinear, completion:{ (filteredImage) in
-                    self.selectedImageView.image = filteredImage
-                })
-            }
-        }
-        let invertAction = UIAlertAction(title: "Invert", style: .default) { (action) in
-            if let imageViewImage = self.selectedImageView.image {
-                Filters.filter(image: imageViewImage, withFilter: .CIColorInvert, completion:{ (filteredImage) in
-                    self.selectedImageView.image = filteredImage
-                })
-            }
+        let allFilters = ["Chrome" : FilterNames.CIPhotoEffectChrome,
+                          "Black and White" : FilterNames.CIPhotoEffectMono,
+                          "Vintage" : FilterNames.CIPhotoEffectTransfer,
+                          "Tone Curve" : FilterNames.CILinearToSRGBToneCurve,
+                          "Color Cufve" : FilterNames.CISRGBToneCurveToLinear,
+                          "Invert" : FilterNames.CIColorInvert,
+                          "Median" : FilterNames.CIMedianFilter,
+                          "Mask" : FilterNames.CIMaskToAlpha,
+                          "Vignette" : FilterNames.CIVignette,
+                          "Distortion" : FilterNames.CIBumpDistortion]
+            
+            for (key, value) in allFilters {
+            let alertAction = alertActionForFilter(name: value, title: key)
+            alertController.addAction(alertAction)
         }
         
-        alertController.addAction(blackAndWhiteAction)
-        alertController.addAction(chromeAction)
-        alertController.addAction(vintageAction)
-        alertController.addAction(toneCurveAction)
-        alertController.addAction(invertAction)
-        alertController.addAction(colorCurveAction)
-        
+       
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    private func alertActionForFilter(name: FilterNames, title: String) -> UIAlertAction {
+        let alertAction = UIAlertAction(title: title, style: .default) { (action) in
+            if let imageViewImage = self.selectedImageView.image {
+                Filters.filter(image: imageViewImage, withFilter: name, completion: { (filteredImage) in self.selectedImageView.image = filteredImage
+                    
+                })
+            }
+        }
+     return alertAction
+    }
+    
+    @IBAction func userLongPressed(_ sender: UILongPressGestureRecognizer) {
+        guard let image = self.selectedImageView.image else { return }
+        if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter) {
+            if let composeController = SLComposeViewController(forServiceType: SLServiceTypeTwitter) {
+            composeController.add(image)
+            
+                self.present(composeController, animated: true, completion: nil)
+            }
+        }
     }
     
     func presentAlertController() {

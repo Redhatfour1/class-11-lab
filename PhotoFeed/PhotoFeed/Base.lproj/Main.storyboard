@@ -28,6 +28,7 @@
                                 <gestureRecognizers/>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="cbM-5Q-zwG" appends="YES" id="T4J-4V-slW"/>
+                                    <outletCollection property="gestureRecognizers" destination="DcO-fz-fOJ" appends="YES" id="0YN-S5-kWk"/>
                                 </connections>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6fE-xE-uZn">
@@ -94,6 +95,11 @@
                         <action selector="userTappedImage:" destination="BYZ-38-t0r" id="tsX-W2-5mj"/>
                     </connections>
                 </tapGestureRecognizer>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="DcO-fz-fOJ">
+                    <connections>
+                        <action selector="userLongPressed:" destination="BYZ-38-t0r" id="gZt-WQ-meZ"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="972" y="134.48275862068968"/>
         </scene>
@@ -112,6 +118,7 @@
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="0ZZ-cB-RaC">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="TPj-Qd-yTt">
                                     <size key="itemSize" width="134" height="136"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -128,6 +135,7 @@
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HF5-1M-71o">
                                                     <rect key="frame" x="0.0" y="0.0" width="134" height="136"/>
+                                                    <gestureRecognizers/>
                                                 </imageView>
                                             </subviews>
                                         </view>
@@ -142,6 +150,9 @@
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="bBL-gB-k0c" appends="YES" id="l9v-R5-hFb"/>
+                                </connections>
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -158,6 +169,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aZX-p9-Moq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pinchGestureRecognizer id="bBL-gB-k0c">
+                    <connections>
+                        <action selector="userPinchedCollectionView:" destination="VYf-1H-gDF" id="rJY-SA-85G"/>
+                    </connections>
+                </pinchGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="965.60000000000002" y="829.83508245877067"/>
         </scene>
